@@ -66,7 +66,7 @@ class @OverlappingMarkerOptimizer
       # marker.setZIndexOffset(1000000);
       ++i
 
-  spiderfy: ->
+  optimize: ->
     xGroups = @sortMarkersByX(@markers)
     markersX1 = xGroups[0]
     markersX2 = xGroups[1]
@@ -76,13 +76,11 @@ class @OverlappingMarkerOptimizer
 
     @pullMarkers sortedX1Markers, 'left'
     @pullMarkers sortedX2Markers, 'right'
-    @spiderfied = true
+    @optimized = true
 
-  unspiderfy: ->
-    if @spiderfied == null
+  restore: ->
+    if @optimized == null
       return this
-
-    @unspiderfying = true
 
     _ref = @markers
     _i = 0
@@ -99,6 +97,5 @@ class @OverlappingMarkerOptimizer
           marker.removeEventListener 'mouseout', mhl.unhighlight
         delete marker['_omsData']
       _i++
-    delete @unspiderfying
-    delete @spiderfied
+    delete @optimized
     this
