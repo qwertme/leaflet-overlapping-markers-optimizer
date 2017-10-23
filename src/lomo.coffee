@@ -1,13 +1,17 @@
-class OverlappingMarkerOptimizer
+class @OverlappingMarkerOptimizer
   constructor: (@map, @markers, opts = {}) ->
+    this.legWeight = 1.5
+    this.legColors = { 'usual': {}, 'highlighted': {} }
+    this['legColors']['usual'] = '#444'
+    this['legColors']['highlighted'] = '#f00'
+
 
   makeHighlightListeners: (marker) =>
-    _this = this
     {
       highlight: ->
-        marker['_omsData'].leg.setStyle color: _this['legColors']['highlighted']
+        marker['_omsData'].leg.setStyle color: this['legColors']['highlighted']
       unhighlight: ->
-        marker['_omsData'].leg.setStyle color: _this['legColors']['usual']
+        marker['_omsData'].leg.setStyle color: this['legColors']['usual']
     }
 
   sortMarkersByX: (markers) ->
@@ -22,10 +26,7 @@ class OverlappingMarkerOptimizer
       else
         x2_array.push marker
       ++i
-    [
-      x1_array
-      x2_array
-    ]
+    [x1_array, x2_array]
 
   sortMarkersByY: (markers) ->
     markers.sort (a, b) ->
@@ -35,7 +36,6 @@ class OverlappingMarkerOptimizer
     maxY = @map.getPixelBounds().max.y
     minX = @map.latLngToLayerPoint(L.latLng([0, 0])).x
     maxX = @map.getPixelBounds().max.x
-    console.log minX
     i = 0
     while i < markers.length
       marker = markers[i]
@@ -65,42 +65,40 @@ class OverlappingMarkerOptimizer
       marker.setLatLng footLl
       # marker.setZIndexOffset(1000000);
       ++i
-    return
 
-    spiderfy: = ->
-      xGroups = @sortMarkersByX(@markers)
-      markersX1 = xGroups[0]
-      markersX2 = xGroups[1]
+  spiderfy: ->
+    xGroups = @sortMarkersByX(@markers)
+    markersX1 = xGroups[0]
+    markersX2 = xGroups[1]
 
-      sortedX1Markers = @sortMarkersByY(markersX1)
-      sortedX2Markers = @sortMarkersByY(markersX2)
+    sortedX1Markers = @sortMarkersByY(markersX1)
+    sortedX2Markers = @sortMarkersByY(markersX2)
 
-      @pullMarkers sortedX1Markers, 'left'
-      @pullMarkers sortedX2Markers, 'right'
-      @spiderfied = true
-      return
+    @pullMarkers sortedX1Markers, 'left'
+    @pullMarkers sortedX2Markers, 'right'
+    @spiderfied = true
 
-    unspiderfy: = ->
-      if @spiderfied == null
-        return this
+  unspiderfy: ->
+    if @spiderfied == null
+      return this
 
-      @unspiderfying = true
+    @unspiderfying = true
 
-      _ref = @markers
-      _i = 0
-      _len = _ref.length
-      while _i < _len
-        marker = _ref[_i]
-        if marker['_omsData'] != null
-          @map.removeLayer marker['_omsData'].leg
-          marker.setLatLng marker['_omsData'].usualPosition
-          marker.setZIndexOffset 0
-          mhl = marker['_omsData'].highlightListeners
-          if mhl != null
-            marker.removeEventListener 'mouseover', mhl.highlight
-            marker.removeEventListener 'mouseout', mhl.unhighlight
-          delete marker['_omsData']
-        _i++
-      delete @unspiderfying
-      delete @spiderfied
-      this
+    _ref = @markers
+    _i = 0
+    _len = _ref.length
+    while _i < _len
+      marker = _ref[_i]
+      if marker['_omsData'] != null
+        @map.removeLayer marker['_omsData'].leg
+        marker.setLatLng marker['_omsData'].usualPosition
+        marker.setZIndexOffset 0
+        mhl = marker['_omsData'].highlightListeners
+        if mhl != null
+          marker.removeEventListener 'mouseover', mhl.highlight
+          marker.removeEventListener 'mouseout', mhl.unhighlight
+        delete marker['_omsData']
+      _i++
+    delete @unspiderfying
+    delete @spiderfied
+    this
