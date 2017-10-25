@@ -1,17 +1,17 @@
 class @OverlappingMarkerOptimizer
   constructor: (@map, @markers, opts = {}) ->
-    this.legWeight = 1.5
+    this.legWeight = 1
     this.legColors = { 'usual': {}, 'highlighted': {} }
-    this['legColors']['usual'] = '#444'
-    this['legColors']['highlighted'] = '#f00'
+    this['legColors']['usual'] = '#888'
+    this['legColors']['highlighted'] = '#E53E55'
 
 
   makeHighlightListeners: (marker) =>
     {
-      highlight: ->
-        marker['_omsData'].leg.setStyle color: this['legColors']['highlighted']
-      unhighlight: ->
-        marker['_omsData'].leg.setStyle color: this['legColors']['usual']
+      highlight: =>
+        marker['_omsData'].leg.setStyle color: this.legColors.highlighted
+      unhighlight: =>
+        marker['_omsData'].leg.setStyle color: this.legColors.usual
     }
 
   sortMarkersByX: (markers) ->
@@ -40,9 +40,11 @@ class @OverlappingMarkerOptimizer
     while i < markers.length
       marker = markers[i]
       if side == 'left'
-        groupX = minX - 45
+        groupX = minX - 5
+        anchorPosition = 90
       else
-        groupX = maxX + 45
+        groupX = maxX + 5
+        anchorPosition = 0
       pt = new (L.Point)(groupX, 23 + maxY + 50 * i)
       footLl = @map.containerPointToLatLng(pt)
 
@@ -52,18 +54,37 @@ class @OverlappingMarkerOptimizer
       ],
         color: @['legColors']['usual']
         weight: @['legWeight']
+        dashArray: '5, 5'
         clickable: false)
       @map.addLayer leg
+
+      circle = L.circle(marker.getLatLng(),
+        radius: 3
+        color: '#89CFF0'
+        fillColor: '#89CFF0'
+        fillOpacity: 1
+        interactive: false
+        className: 'leaflet-lomo-circle'
+      )
+      circle.addTo(@map)
+
       marker['_omsData'] =
         usualPosition: marker.getLatLng()
         leg: leg
-      if @['legColors']['highlighted'] != @['legColors']['usual']
+      if @legColors['highlighted'] != @['legColors']['usual']
         mhl = @makeHighlightListeners(marker)
         marker['_omsData'].highlightListeners = mhl
+
         marker.addEventListener 'mouseover', mhl.highlight
         marker.addEventListener 'mouseout', mhl.unhighlight
+
+
+      icon_options = marker.options.icon.options
+      icon_options.iconAnchor = [anchorPosition, 8]
+      icon = L.divIcon icon_options
+
+      marker.setIcon icon
       marker.setLatLng footLl
-      # marker.setZIndexOffset(1000000);
       ++i
 
   optimize: ->
