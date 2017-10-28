@@ -55,6 +55,7 @@ class @OverlappingMarkerOptimizer
         color: @['legColors']['usual']
         weight: @['legWeight']
         dashArray: '5, 5'
+        tags: marker.options.tags
         clickable: false)
       @map.addLayer leg
 
@@ -65,6 +66,7 @@ class @OverlappingMarkerOptimizer
         fillOpacity: 1
         interactive: false
         className: 'leaflet-lomo-circle'
+        tags: marker.options.tags
       )
       circle.addTo(@map)
 
