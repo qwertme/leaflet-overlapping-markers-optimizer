@@ -2,7 +2,7 @@ class @OverlappingMarkerOptimizer
   constructor: (@map, @markers, opts = {}) ->
     this.legWeight = 1
     this.legColors = { 'usual': {}, 'highlighted': {} }
-    this['legColors']['usual'] = '#888'
+    this['legColors']['usual'] = '#000000'
     this['legColors']['highlighted'] = '#E53E55'
 
 
