@@ -73,6 +73,7 @@ class @OverlappingMarkerOptimizer
       marker['_omsData'] =
         usualPosition: marker.getLatLng()
         leg: leg
+        circle: circle
       if @legColors['highlighted'] != @['legColors']['usual']
         mhl = @makeHighlightListeners(marker)
         marker['_omsData'].highlightListeners = mhl
@@ -112,6 +113,8 @@ class @OverlappingMarkerOptimizer
       marker = _ref[_i]
       if marker['_omsData'] != null
         @map.removeLayer marker['_omsData'].leg
+        @map.removeLayer marker['_omsData'].circle
+
         marker.setLatLng marker['_omsData'].usualPosition
         marker.setZIndexOffset 0
         mhl = marker['_omsData'].highlightListeners
