@@ -1,1 +1,0 @@
-# leaflet-overlapping-markers-optimizer

@@ -1,0 +1,9 @@
+{
+  "name": "leaflet-overlapping-markers-optimizer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "leaflet-overlapping-markers-optimizer.js",
+  "dependencies": {
+    "leaflet": "*"
+  }
+}
